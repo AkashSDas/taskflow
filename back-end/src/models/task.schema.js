@@ -12,11 +12,6 @@ export var Status = {
   DONE: "done",
 };
 
-var todoSchema = new Schema({
-  title: { type: String, required: true, min: 3, max: 256, trim: true },
-  done: { type: Boolean, required: true, default: false },
-});
-
 var taskSchema = new Schema(
   {
     title: { type: String, required: true, min: 3, max: 256, trim: true },
@@ -33,7 +28,16 @@ var taskSchema = new Schema(
       default: [],
       required: true,
     },
-    todos: { type: [todoSchema], required: true, default: [] },
+    todos: {
+      type: [
+        {
+          title: { type: String, required: true, min: 3, max: 256, trim: true },
+          done: { type: Boolean, required: true, default: false },
+        },
+      ],
+      required: true,
+      default: [],
+    },
   },
   { timestamps: true }
 );
