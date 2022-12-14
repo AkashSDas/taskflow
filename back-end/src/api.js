@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import authRouter from "./routes/auth.route.js";
+import taskRouter from "./routes/task.route.js";
 
 /** Express app */
 export var app = express();
@@ -30,6 +31,7 @@ app.get("/api/v1/test", function testRoute(_req, res) {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/task", taskRouter);
 
 app.all("*", function handleRemainingRoutes(req, res) {
   return res.status(404).json({
