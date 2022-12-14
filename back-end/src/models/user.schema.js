@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import argon2 from "argon2";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
+import { BaseApiError } from "../utils/error";
 
 var userSchema = new Schema(
   {
@@ -37,7 +38,7 @@ userSchema.pre("save", async function preMongooseSave(next) {
 
 userSchema.post("save", function postMongooseSave(error, doc, next) {
   if (error.name == "MongoError" && error.code == 11000) {
-    return next(new Error("Email already used"));
+    return next(new BaseApiError(400, "Email already used"));
   }
 
   return next();
