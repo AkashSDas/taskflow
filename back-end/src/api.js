@@ -3,6 +3,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
+import authRouter from "./routes/auth.route.js";
+
 /** Express app */
 export var app = express();
 
@@ -26,3 +28,5 @@ app.use(morgan("dev"));
 app.get("/api/v1/test", function testRoute(_req, res) {
   return res.status(200).json({ message: "🪖 TaskFlow 🎖️" });
 });
+
+app.use("/api/v1/auth", authRouter);
