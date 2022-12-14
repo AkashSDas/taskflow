@@ -28,9 +28,7 @@ var userSchema = new Schema(
 userSchema.pre("save", async function preMongooseSave(next) {
   // Hash password if it has been modified
   if (this.isModified("passwordDigest")) {
-    this.passwordDigest = await argon2.hash(this.passwordDigest, {
-      salt: process.env.SALT,
-    });
+    this.passwordDigest = await argon2.hash(this.passwordDigest);
   }
 
   return next();
