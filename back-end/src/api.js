@@ -30,3 +30,9 @@ app.get("/api/v1/test", function testRoute(_req, res) {
 });
 
 app.use("/api/v1/auth", authRouter);
+
+app.all("*", function handleRemainingRoutes(req, res) {
+  return res.status(404).json({
+    message: `Cannot find ${req.originalUrl} on this server!`,
+  });
+});
