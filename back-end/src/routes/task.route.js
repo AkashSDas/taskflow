@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { createTaskController } from "../controllers/task.controller.js";
+import {
+  addTodoController,
+  createTaskController,
+} from "../controllers/task.controller.js";
 import { validateResource } from "../middlewares/zod.middleware.js";
 import * as z from "../utils/zod.js";
 import { handleMiddlewareError } from "../utils/async.js";
@@ -19,5 +22,14 @@ router.post(
   validateResource(z.createTaskSchema),
   handleMiddlewareError(verifyJwt),
   handleMiddlewareError(createTaskController),
+  sendErrorResponse
+);
+
+// Add todo
+router.put(
+  "/:taskId/todo",
+  validateResource(z.addTodoSchema),
+  handleMiddlewareError(verifyJwt),
+  handleMiddlewareError(addTodoController),
   sendErrorResponse
 );

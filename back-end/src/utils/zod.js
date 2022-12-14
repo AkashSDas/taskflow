@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Priority } from "../models/tasks.schema.js";
+import { Priority } from "../models/task.schema.js";
 
 // =============================
 // Auth
@@ -32,5 +32,11 @@ export var createTaskSchema = z.object({
   body: z.object({
     title: z.string({ required_error: "Required" }).min(3, "Too short"),
     priority: z.enum(Object.values(Priority)).optional(),
+  }),
+});
+
+export var addTodoSchema = z.object({
+  body: z.object({
+    title: z.string({ required_error: "Required" }).min(3, "Too short"),
   }),
 });

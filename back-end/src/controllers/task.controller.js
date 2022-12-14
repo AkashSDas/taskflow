@@ -1,4 +1,4 @@
-import Task from "../models/tasks.schema.js";
+import Task from "../models/task.schema.js";
 
 /**
  * Create a new task
@@ -15,4 +15,22 @@ export async function createTaskController(req, res) {
   });
 
   return res.status(201).json({ task });
+}
+
+/**
+ * Add todo in the task
+ * @route PUT /api/v1/task/:taskId/todo
+ */
+export async function addTodoController(req, res) {
+  var user = res.locals.user;
+  var taskId = req.params.taskId;
+
+  var task = await Task.findOneAndUpdate(
+    { $and: [{ _id: taskId }, { assigns: { $in: user._id } }] },
+    { $push: { todos: { title: req.body.title } } },
+    { new: true }
+  );
+
+  if (!task) return res.status(404).json({ message: "Task not found" });
+  return res.status(200).json({ task });
 }
