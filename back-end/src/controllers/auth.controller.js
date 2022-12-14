@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
  * @remark email and password are required
  * @remark access token will be sent in response cookie and body
  */
-export async function signup(req, res) {
+export async function signupController(req, res) {
   var { email, password } = req.body;
   var user = await User.create({ email, passwordDigest: password });
   if (!user) throw new BaseApiError(500, "Failed to create user");
@@ -29,7 +29,7 @@ export async function signup(req, res) {
  * @route POST /api/v1/auth/login
  * @remark access token will be sent in response cookie and body
  */
-export async function login(req, res) {
+export async function loginController(req, res) {
   var { email, password } = req.body;
   var user = await User.findOne({ email }).select("+passwordDigest");
   if (!user) return res.status(404).json({ message: "User not found" });
@@ -57,7 +57,7 @@ export async function login(req, res) {
  * and there was a timeout error. So, I sent a response instead of throwing an error
  * and it working fine. Follow the test cases regarding this.
  */
-export async function accesssToken(req, res) {
+export async function accesssTokenController(req, res) {
   var refreshToken = req.cookies?.refreshToken;
   if (!refreshToken) return res.status(400).json({ message: "Unauthorized" });
 
@@ -88,4 +88,16 @@ export async function accesssToken(req, res) {
     logger.error(`[auth.controller.js] accesssToken: ${error.message}`);
     return res.status(500).json({ message: "Internal server error" });
   }
+}
+
+/**
+ * Logout user
+ * @route GET /api/v1/auth/logout
+ */
+export async function logoutController(req, res) {
+  if (req.cookies?.refreshToken) {
+    res.clearCookie("refreshToken", loginCookieConfig);
+  }
+
+  return res.status(200).json({ message: "Logged out" });
 }
