@@ -2,8 +2,12 @@ import { config } from "dotenv";
 
 import logger from "./utils/logger.js";
 import { app } from "./api.js";
+import { connectToDB } from "./utils/db.js";
 
 if (process.env.NODE_ENV != "production") config();
+
+// Connect to database
+connectToDB();
 
 // Start server
 (function listenToPort() {
