@@ -40,3 +40,9 @@ export var addTodoSchema = z.object({
     title: z.string({ required_error: "Required" }).min(3, "Too short"),
   }),
 });
+
+export var updateTodoStatusSchema = z.object({
+  body: z.object({
+    done: z.boolean({ required_error: "Required" }),
+  }),
+});

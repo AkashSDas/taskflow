@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addTodoController,
   createTaskController,
+  updateTodoStatusController,
 } from "../controllers/task.controller.js";
 import { validateResource } from "../middlewares/zod.middleware.js";
 import * as z from "../utils/zod.js";
@@ -31,5 +32,14 @@ router.put(
   validateResource(z.addTodoSchema),
   handleMiddlewareError(verifyJwt),
   handleMiddlewareError(addTodoController),
+  sendErrorResponse
+);
+
+// Update todo status
+router.put(
+  "/:taskId/todo/:todoId",
+  validateResource(z.updateTodoStatusSchema),
+  handleMiddlewareError(verifyJwt),
+  handleMiddlewareError(updateTodoStatusController),
   sendErrorResponse
 );
