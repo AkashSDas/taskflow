@@ -22,6 +22,8 @@ import { createTask } from "../../services/task";
 import { useUser } from "../../lib/hooks";
 import { customToast } from "../shared/toast";
 import { useEffect } from "react";
+import { useMutation } from "react-query";
+import { queryClient } from "../../lib/react-query";
 
 export default function CreateTaskModal({ isOpen, onClose }) {
   return (
@@ -50,24 +52,39 @@ function AddTaskForm({ onClose }) {
     resolver: yupResolver(createTaskSchema),
   });
 
-  async function onSubmit(data) {
-    if (!accessToken) return;
-    var response = await createTask(data.title, accessToken);
-    if (response.success) {
-      reset();
-      onClose();
+  var mutation = useMutation({
+    mutationFn: (data) => createTask(data.title, accessToken),
+    onSuccess: async (response) => {
+      if (response.success) {
+        await queryClient.invalidateQueries(["tasks"]);
+        reset();
+        onClose();
+        customToast(
+          "https://media.giphy.com/media/e2nYWcTk0s8TK/giphy.gif",
+          "Task Added",
+          "success"
+        );
+      } else {
+        customToast(
+          "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
+          response.error ?? "Something went wrong",
+          "error"
+        );
+      }
+    },
+    onError: (error) => {
+      let errorMsg = error?.message ?? "Something went wrong";
       customToast(
-        "https://media.giphy.com/media/e2nYWcTk0s8TK/giphy.gif",
-        "Task Added",
-        "success"
-      );
-    } else {
-      customToast(
-        "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
-        response.error ?? "Something went wrong",
+        "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+        errorMsg,
         "error"
       );
-    }
+    },
+  });
+
+  async function onSubmit(data) {
+    if (!accessToken) return;
+    await mutation.mutateAsync(data);
   }
 
   return (
