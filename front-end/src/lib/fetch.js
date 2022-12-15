@@ -8,7 +8,7 @@ export async function fetchFromAPI(URL, method, data, accessToken) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      data: data && JSON.stringify(data),
+      body: data && JSON.stringify(data),
       credentials: "include",
     });
     var data = await response.json();

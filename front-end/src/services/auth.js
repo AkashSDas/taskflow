@@ -28,11 +28,15 @@ export async function login(data) {
       success: response.success,
       user: response.data.user,
       accessToken: response.data.accessToken,
+      message: response.data.message,
     };
   }
+
+  console.log(response);
 
   return {
     success: response.success,
     error: response.error ?? response.data?.error,
+    message: response.data?.message,
   };
 }
