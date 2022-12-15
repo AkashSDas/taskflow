@@ -5,11 +5,13 @@ import {
   Heading,
   HStack,
   Text,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import Loader from "../shared/loader";
 import { useTask } from "../../lib/hooks";
+import CreateTodoModal from "../modal/create-todo";
 
 export default function Task() {
   var { loading, task } = useTask();
@@ -39,6 +41,8 @@ export default function Task() {
   }
 
   function AddTodoButton() {
+    var { isOpen, onClose, onOpen } = useDisclosure();
+
     return (
       <Button
         h={pxToRem(34)}
@@ -46,8 +50,10 @@ export default function Task() {
         color="#278BFF"
         bg="#DDEDFF"
         fontFamily="heading"
+        onClick={onOpen}
       >
         Add Todo
+        <CreateTodoModal isOpen={isOpen} onClose={onClose} />
       </Button>
     );
   }
