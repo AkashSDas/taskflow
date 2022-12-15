@@ -42,3 +42,17 @@ export async function deleteTask(taskId, accessToken) {
     error: response.error ?? response.data?.error,
   };
 }
+
+export async function getTask(taskId, accessToken) {
+  if (!taskId) throw new Error("Task id is required");
+  var response = await fetchFromTask(`/${taskId}`, "get", null, accessToken);
+
+  if (response.status == 200) {
+    return { success: response.success, task: response.data.task };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
+}
