@@ -29,6 +29,22 @@ export var chakraTheme = extendTheme({
   },
   components: {
     Modal: getModalStyle(),
+    Badge: {
+      variants: {
+        solid: {
+          bg: "#DDEDFF",
+          color: "#278BFF",
+          fontFamily: "heading",
+          fontSize: "sm",
+          rounded: "full",
+          px: pxToRem(12),
+          h: pxToRem(24),
+          display: "flex",
+          justContent: "center",
+          alignItems: "center",
+        },
+      },
+    },
     Button: {
       variants: {
         primarySolid: {
