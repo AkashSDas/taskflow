@@ -5,6 +5,10 @@ export function useUser() {
   var { data, error } = useQuery("new-access-token", getNewAccessToken, {
     retry: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+    refetchIntervalInBackground: false,
   });
 
   return {

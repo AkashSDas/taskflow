@@ -18,6 +18,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { createTaskSchema } from "../../lib/validation";
 import { pxToRem } from "../../lib/chakra-ui";
+import { createTask } from "../../services/task";
+import { useUser } from "../../lib/hooks";
+import { customToast } from "../shared/toast";
+import { useEffect } from "react";
 
 export default function CreateTaskModal({ isOpen, onClose }) {
   return (
@@ -32,24 +36,45 @@ export default function CreateTaskModal({ isOpen, onClose }) {
 
         {/* Modal main content */}
         <ModalBody>
-          <AddTaskForm />
+          <AddTaskForm onClose={onClose} />
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 }
 
-function AddTaskForm() {
+function AddTaskForm({ onClose }) {
+  var { accessToken } = useUser();
   var { reset, register, handleSubmit, formState } = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: { title: "" },
     resolver: yupResolver(createTaskSchema),
   });
+
+  async function onSubmit(data) {
+    if (!accessToken) return;
+    var response = await createTask(data.title, accessToken);
+    if (response.success) {
+      reset();
+      onClose();
+      customToast(
+        "https://media.giphy.com/media/e2nYWcTk0s8TK/giphy.gif",
+        "Task Added",
+        "success"
+      );
+    } else {
+      customToast(
+        "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
+        response.error ?? "Something went wrong",
+        "error"
+      );
+    }
+  }
 
   return (
     <VStack
       as="form"
       gap={pxToRem(32)}
-      onSubmit={handleSubmit((data) => console.log(data))}
+      onSubmit={handleSubmit((data) => onSubmit(data))}
     >
       {/* Title input */}
       <FormControl isInvalid={formState.errors.title ? true : false}>
