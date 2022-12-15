@@ -23,18 +23,22 @@ export function useUser() {
 
 export function useTasks() {
   var { accessToken } = useUser();
-  var { data, error } = useQuery("tasks", () => getAllTask(accessToken), {
-    enabled: accessToken != null,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
-  });
+  var { data, error, isFetching } = useQuery(
+    "tasks",
+    () => getAllTask(accessToken),
+    {
+      enabled: accessToken != null,
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
+    }
+  );
 
   return {
-    loading: !data && !error,
+    loading: !data && !error && isFetching,
     error: error || data?.error,
     tasks: data?.tasks,
     success: data?.success,

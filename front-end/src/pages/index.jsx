@@ -1,9 +1,9 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import TasksList from "../components/tasks/tasks-list";
 
 export default function HomePage() {
   return (
-    <Box>
+    <Box as="main">
       <TasksList />
     </Box>
   );
