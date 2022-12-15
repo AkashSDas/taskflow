@@ -115,8 +115,17 @@ export default function Navbar() {
         TaskFlow
       </Text>
 
-      {JSON.stringify(user)}
       <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
+        {user && (
+          <Text
+            fontSize="sm"
+            fontWeight="semibold"
+            color={chakraTheme.color.text2}
+          >
+            {user.email}
+          </Text>
+        )}
+
         {!user && <LoginButton />}
         {user && <LogoutButton />}
         <AddTaskButton />
