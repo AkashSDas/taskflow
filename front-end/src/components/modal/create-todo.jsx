@@ -15,13 +15,14 @@ import {
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { createTaskSchema } from "../../lib/validation";
+import { createTaskSchema, createTodoSchema } from "../../lib/validation";
 import { pxToRem } from "../../lib/chakra-ui";
-import { createTask } from "../../services/task";
+import { createTask, createTodo } from "../../services/task";
 import { useUser } from "../../lib/hooks";
 import { customToast } from "../shared/toast";
 import { useMutation } from "react-query";
 import { queryClient } from "../../lib/react-query";
+import { useParams } from "react-router-dom";
 
 export default function CreateTodoModal({ isOpen, onClose }) {
   return (
@@ -45,44 +46,45 @@ export default function CreateTodoModal({ isOpen, onClose }) {
 
 function AddTodoForm({ onClose }) {
   var { accessToken } = useUser();
+  var { taskId } = useParams();
   var { reset, register, handleSubmit, formState } = useForm({
     defaultValues: { title: "" },
-    resolver: yupResolver(createTaskSchema),
+    resolver: yupResolver(createTodoSchema),
   });
 
-  // var mutation = useMutation({
-  //   mutationFn: (data) => createTask(data.title, accessToken),
-  //   onSuccess: async (response) => {
-  //     if (response.success) {
-  //       await queryClient.invalidateQueries(["tasks"]);
-  //       reset();
-  //       onClose();
-  //       customToast(
-  //         "https://media.giphy.com/media/e2nYWcTk0s8TK/giphy.gif",
-  //         "Task Added",
-  //         "success"
-  //       );
-  //     } else {
-  //       customToast(
-  //         "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
-  //         response.error ?? "Something went wrong",
-  //         "error"
-  //       );
-  //     }
-  //   },
-  //   onError: (error) => {
-  //     let errorMsg = error?.message ?? "Something went wrong";
-  //     customToast(
-  //       "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
-  //       errorMsg,
-  //       "error"
-  //     );
-  //   },
-  // });
+  var mutation = useMutation({
+    mutationFn: (data) => createTodo(data.title, taskId, accessToken),
+    onSuccess: async (response) => {
+      if (response.success) {
+        await queryClient.invalidateQueries(["task", taskId]);
+        reset();
+        onClose();
+        customToast(
+          "https://media.giphy.com/media/e2nYWcTk0s8TK/giphy.gif",
+          "Todo Added",
+          "success"
+        );
+      } else {
+        customToast(
+          "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
+          response.error ?? "Something went wrong",
+          "error"
+        );
+      }
+    },
+    onError: (error) => {
+      let errorMsg = error?.message ?? "Something went wrong";
+      customToast(
+        "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+        errorMsg,
+        "error"
+      );
+    },
+  });
 
   async function onSubmit(data) {
-    // if (!accessToken) return;
-    // await mutation.mutateAsync(data);
+    if (!accessToken || !taskId) return;
+    await mutation.mutateAsync(data);
   }
 
   return (

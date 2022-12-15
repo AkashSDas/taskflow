@@ -56,3 +56,22 @@ export async function getTask(taskId, accessToken) {
     error: response.error ?? response.data?.error,
   };
 }
+
+export async function createTodo(title, taskId, accessToken) {
+  var response = await fetchFromTask(
+    `${taskId}/todo`,
+    "put",
+    { title },
+    accessToken
+  );
+
+  console.log(response);
+  if (response.status == 201) {
+    return { success: response.success, task: response.data.task };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
+}

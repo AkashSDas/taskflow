@@ -16,3 +16,10 @@ export var createTaskSchema = object({
     .min(3, "Too Short!")
     .max(64, "Too Long!"),
 }).required("Required");
+
+export var createTodoSchema = object({
+  title: string()
+    .required("Required")
+    .min(3, "Too Short!")
+    .max(64, "Too Long!"),
+}).required("Required");
