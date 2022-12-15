@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 import HomePage from "./pages";
 import NotFoundPage from "./pages/404";
+import TaskPage from "./pages/task/[taskId]";
 
 import { chakraTheme } from "./lib/chakra-ui";
 import { queryClient } from "./lib/react-query";
@@ -25,6 +26,8 @@ export default function App() {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<HomePage />} />
+
+                <Route path="/task/:taskId" element={<TaskPage />} />
 
                 <Route path="/index" element={<Navigate replace to="/" />} />
                 <Route path="*" element={<NotFoundPage />} />

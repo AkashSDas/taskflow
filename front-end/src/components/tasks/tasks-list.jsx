@@ -6,6 +6,7 @@ import { useMutation } from "react-query";
 import { deleteTask } from "../../services/task";
 import { queryClient } from "../../lib/react-query";
 import { customToast } from "../shared/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function TasksList() {
   var { user, accessToken } = useUser();
@@ -69,6 +70,8 @@ export default function TasksList() {
     );
   }
 
+  var navigate = useNavigate();
+
   return (
     <VStack
       w="full"
@@ -91,6 +94,7 @@ export default function TasksList() {
           cursor="pointer"
           _hover={{ bg: chakraTheme.color.bg2 }}
           role="group"
+          onClick={() => navigate(`/task/${task._id}`)}
         >
           <Text
             flexGrow={1}
