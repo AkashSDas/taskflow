@@ -6,26 +6,65 @@ import {
   FormLabel,
   Input,
   Button,
+  Box,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { signupSchema } from "../../lib/validation";
+import { loginSchema } from "../../lib/validation";
 import { pxToRem, chakraTheme } from "../../lib/chakra-ui";
 import { useAtom } from "jotai";
 import { authModalFormAtom } from "../../lib/atom";
+import { useMutation } from "react-query";
+import { login } from "../../services/auth";
+import { queryClient } from "../../lib/react-query";
+import { customToast } from "../shared/toast";
 
-export default function LoginForm() {
+export default function LoginForm({ onClose }) {
   var [_form, setForm] = useAtom(authModalFormAtom);
   var { reset, register, handleSubmit, formState } = useForm({
     defaultValues: { email: "", password: "" },
-    resolver: yupResolver(signupSchema),
+    resolver: yupResolver(loginSchema),
+  });
+
+  var mutation = useMutation({
+    mutationFn: (data) => login(data),
+    onSuccess: async (response) => {
+      if (response.success) {
+        reset();
+        onClose();
+        await queryClient.invalidateQueries(["new-access-token"]);
+        customToast(
+          "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
+          "Login successful"
+        );
+      } else {
+        let errorMsg = response?.message ?? "Something went wrong";
+        if (Array.isArray(response.error)) {
+          errorMsg = response.error[0].message;
+        }
+
+        customToast(
+          "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+          errorMsg,
+          "error"
+        );
+      }
+    },
+    onError: (error) => {
+      let errorMsg = error?.message ?? "Something went wrong";
+      customToast(
+        "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+        errorMsg,
+        "error"
+      );
+    },
   });
 
   return (
     <VStack
       as="form"
       gap={pxToRem(32)}
-      onSubmit={handleSubmit((data) => console.log(data))}
+      onSubmit={handleSubmit((data) => mutation.mutate(data))}
     >
       {/* Email input */}
       <FormControl isInvalid={formState.errors.email ? true : false}>
@@ -75,11 +114,20 @@ export default function LoginForm() {
         {formState.isSubmitting ? "Loading..." : "Login"}
       </Button>
 
-      <Text fontWeight="semibold" fontSize="sm" color={chakraTheme.color.text2}>
-        Don't have an account ?{" "}
+      <Box>
+        <Text
+          display="inline"
+          fontWeight="semibold"
+          fontSize="sm"
+          color={chakraTheme.color.text2}
+        >
+          Don't have an account ?{" "}
+        </Text>
         <Text
           display="inline"
           cursor="pointer"
+          fontWeight="semibold"
+          fontSize="sm"
           color={chakraTheme.color.primary}
           onClick={() => {
             reset();
@@ -88,7 +136,7 @@ export default function LoginForm() {
         >
           Signup
         </Text>
-      </Text>
+      </Box>
     </VStack>
   );
 }

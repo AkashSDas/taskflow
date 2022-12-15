@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClientProvider } from "react-query";
 import { Provider } from "jotai";
+import { Toaster } from "react-hot-toast";
 
 import HomePage from "./pages";
 import NotFoundPage from "./pages/404";
@@ -30,6 +31,8 @@ export default function App() {
               </Route>
             </Routes>
           </BrowserRouter>
+
+          <Toaster />
         </ChakraProvider>
       </QueryClientProvider>
     </Provider>
