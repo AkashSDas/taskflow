@@ -113,7 +113,7 @@ export default function TasksList() {
   );
 }
 
-function DeleteIcon() {
+export function DeleteIcon() {
   return (
     <Icon
       display="block"

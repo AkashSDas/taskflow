@@ -1,9 +1,12 @@
 import {
   Badge,
+  Box,
   Button,
   Divider,
   Heading,
   HStack,
+  Icon,
+  IconButton,
   Text,
   useDisclosure,
   VStack,
@@ -12,6 +15,7 @@ import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import Loader from "../shared/loader";
 import { useTask } from "../../lib/hooks";
 import CreateTodoModal from "../modal/create-todo";
+import { DeleteIcon } from "./tasks-list";
 
 export default function Task() {
   var { loading, task } = useTask();
@@ -85,7 +89,7 @@ export default function Task() {
 
 function Todos({ todos }) {
   return (
-    <VStack>
+    <VStack w="full">
       {todos.map((todo) => (
         <Todo todo={todo} />
       ))}
@@ -95,8 +99,58 @@ function Todos({ todos }) {
 
 function Todo({ todo }) {
   return (
-    <VStack w="full" maxW={pxToRem(600)} alignItems="start">
-      <Heading fontSize="xl">{todo.title}</Heading>
-    </VStack>
+    <HStack
+      role="group"
+      w="full"
+      maxW={pxToRem(600)}
+      alignItems="center"
+      gap={pxToRem(12)}
+      px={pxToRem(8)}
+      py={pxToRem(6)}
+      rounded="md"
+      _hover={{ bg: chakraTheme.color.bg2 }}
+    >
+      <DoneIcon />
+      <Text flexGrow={1} color={chakraTheme.color.text2} fontWeight="semibold">
+        {todo.title}
+      </Text>
+
+      <Box visibility="hidden" _groupHover={{ visibility: "visible" }}>
+        <DeleteIcon />
+      </Box>
+    </HStack>
+  );
+}
+
+function DoneIcon({ done }) {
+  return (
+    <IconButton
+      h={pxToRem(26)}
+      w={pxToRem(26)}
+      p={pxToRem(4)}
+      rounded="md"
+      variant="ghost"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Icon display="block" w={pxToRem(20)} h={pxToRem(20)} cursor="pointer">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2 13L5.52642 15.8211C6.35374 16.483 7.55365 16.3848 8.2624 15.5973L16 7M8 13L11.5264 15.8211C12.3537 16.483 13.5536 16.3848 14.2624 15.5973L22 7"
+            stroke={done ? "#3EAE6B" : "#B9B9B9"}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Icon>
+    </IconButton>
   );
 }
