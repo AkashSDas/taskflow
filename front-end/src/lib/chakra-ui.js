@@ -79,7 +79,7 @@ export var chakraTheme = extendTheme({
 
 function getModalStyle() {
   var baseStyle = definePartsStyle({
-    overlay: { bg: "rgba(0, 0, 0, 0.8)" },
+    overlay: { bg: "rgba(0, 0, 0, 0.4)" },
     dialog: { borderRadius: "xl", bg: "#FCFCFC" },
   });
   var modalTheme = defineMultiStyleConfig({ baseStyle });
