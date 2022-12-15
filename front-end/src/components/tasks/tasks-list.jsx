@@ -2,9 +2,13 @@ import { Box, HStack, Icon, IconButton, Text, VStack } from "@chakra-ui/react";
 import Loader from "../shared/loader";
 import { useTasks, useUser } from "../../lib/hooks";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
+import { useMutation } from "react-query";
+import { deleteTask } from "../../services/task";
+import { queryClient } from "../../lib/react-query";
+import { customToast } from "../shared/toast";
 
 export default function TasksList() {
-  var { user } = useUser();
+  var { user, accessToken } = useUser();
   var { tasks, loading } = useTasks();
 
   if (loading) {
@@ -23,7 +27,37 @@ export default function TasksList() {
     );
   }
 
-  function DeleteButton() {
+  function DeleteButton({ taskId }) {
+    var mutation = useMutation({
+      mutationFn: () => deleteTask(taskId, accessToken),
+      onMutate: async () => {
+        await queryClient.cancelQueries({ queryKey: ["tasks", taskId] });
+        var previousTasks = queryClient.getQueryData(["tasks"]);
+        var updatedTasks = tasks.filter((t) => t._id != taskId);
+        console.log(updatedTasks);
+        queryClient.setQueryData(["tasks", taskId], updatedTasks);
+        return { previousTasks, taskId };
+      },
+      onSuccess: (response) => {
+        if (response.success) {
+          customToast(
+            "https://media.giphy.com/media/O3GqAYR9jFxLi/giphy.gif",
+            "Task deleted",
+            "success"
+          );
+        }
+      },
+      onError: (_err, _variables, context) => {
+        queryClient.setQueryData(
+          ["tasks", context.taskId],
+          context.previousTasks
+        );
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      },
+    });
+
     return (
       <IconButton
         variant="unstyled"
@@ -31,6 +65,8 @@ export default function TasksList() {
         display="flex"
         justifyContent="center"
         alignItems="center"
+        disabled={mutation.isLoading}
+        onClick={() => mutation.mutate()}
       >
         <DeleteIcon />
       </IconButton>
@@ -44,7 +80,7 @@ export default function TasksList() {
       alignItems="center"
       px={pxToRem(32)}
     >
-      {tasks.map((task) => (
+      {tasks?.map((task) => (
         <HStack
           key={task._id}
           h={pxToRem(56)}
@@ -69,7 +105,7 @@ export default function TasksList() {
           </Text>
 
           <Box visibility="hidden" _groupHover={{ visibility: "visible" }}>
-            <DeleteButton />
+            <DeleteButton taskId={task._id} />
           </Box>
         </HStack>
       ))}

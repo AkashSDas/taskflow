@@ -20,7 +20,18 @@ export async function createTask(title, accessToken) {
 export async function getAllTask(accessToken) {
   var response = await fetchFromTask("", "get", null, accessToken);
 
-  console.log(response);
+  if (response.status == 200) {
+    return { success: response.success, tasks: response.data.tasks };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
+}
+
+export async function deleteTask(taskId, accessToken) {
+  var response = await fetchFromTask(`/${taskId}`, "delete", null, accessToken);
 
   if (response.status == 200) {
     return { success: response.success, tasks: response.data.tasks };
