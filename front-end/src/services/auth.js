@@ -14,7 +14,10 @@ export async function getNewAccessToken() {
     };
   }
 
-  return { success: response.success, error: response.error };
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
 }
 
 export async function login(data) {
@@ -28,5 +31,8 @@ export async function login(data) {
     };
   }
 
-  return { success: response.success, error: response.error };
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
 }
