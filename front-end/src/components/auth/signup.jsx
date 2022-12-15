@@ -11,8 +11,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signupSchema } from "../../lib/validation";
 import { pxToRem, chakraTheme } from "../../lib/chakra-ui";
+import { useAtom } from "jotai";
+import { authModalFormAtom } from "../../lib/atom";
 
 export default function SignupForm() {
+  var [_form, setForm] = useAtom(authModalFormAtom);
   var { reset, register, handleSubmit, formState } = useForm({
     defaultValues: { email: "", password: "" },
     resolver: yupResolver(signupSchema),
@@ -80,6 +83,7 @@ export default function SignupForm() {
           color={chakraTheme.color.primary}
           onClick={() => {
             reset();
+            setForm("login");
           }}
         >
           Login

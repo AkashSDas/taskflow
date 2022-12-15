@@ -1,17 +1,33 @@
 import { Button, HStack, Icon, Text, useDisclosure } from "@chakra-ui/react";
+import { useAtom } from "jotai";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import AuthModal from "../modal/auth";
+import { authModalFormAtom } from "../../lib/atom";
 
 export default function Navbar() {
   var { isOpen, onClose, onOpen } = useDisclosure();
 
   function AddTaskButton() {
+    var [_form, setForm] = useAtom(authModalFormAtom);
+
     return (
-      <Button onClick={onOpen} variant="primarySolid">
+      <Button
+        onClick={() => {
+          onOpen();
+          setForm("signup");
+        }}
+        variant="primarySolid"
+      >
         <HStack>
           <AddIcon />
           <Text>Add Task</Text>
-          <AuthModal isOpen={isOpen} onClose={onClose} form="signup" />
+          <AuthModal
+            isOpen={isOpen}
+            onClose={() => {
+              onClose();
+              setForm(null);
+            }}
+          />
         </HStack>
       </Button>
     );
