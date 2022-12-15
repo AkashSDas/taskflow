@@ -1,10 +1,13 @@
 import express from "express";
+import { config } from "dotenv";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import authRouter from "./routes/auth.route.js";
 import taskRouter from "./routes/task.route.js";
+
+if (process.env.NODE_ENV != "production") config();
 
 /** Express app */
 export var app = express();
@@ -15,11 +18,8 @@ export var app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cors({ origin: process.env.FRONTEND_BASE_URL, credentials: true }));
-
 app.use(cookieParser());
-
 app.use(morgan("dev"));
 
 // ==============================
