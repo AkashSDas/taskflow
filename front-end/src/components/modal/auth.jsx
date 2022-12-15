@@ -11,6 +11,7 @@ import {
 import { useAtom } from "jotai";
 import { authModalFormAtom } from "../../lib/atom";
 import { pxToRem } from "../../lib/chakra-ui";
+import LoginForm from "../auth/login";
 import SignupForm from "../auth/signup";
 
 export default function AuthModal({ isOpen, onClose }) {
@@ -44,8 +45,4 @@ export default function AuthModal({ isOpen, onClose }) {
       </ModalContent>
     </Modal>
   );
-}
-
-function LoginForm() {
-  return <Box></Box>;
 }
