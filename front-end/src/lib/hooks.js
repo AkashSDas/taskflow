@@ -14,7 +14,7 @@ export function useUser() {
   });
 
   return {
-    loading: !data || !error,
+    loading: !data && !error,
     error: error || data?.error,
     user: data?.user,
     accessToken: data?.accessToken,
@@ -39,7 +39,7 @@ export function useTasks() {
   );
 
   return {
-    loading: !data || !error || isFetching,
+    loading: !data && !error && isFetching,
     error: error || data?.error,
     tasks: data?.tasks,
     success: data?.success,
@@ -64,7 +64,7 @@ export function useTask() {
   );
 
   return {
-    loading: !data || !error || isFetching,
+    loading: !data && !error && isFetching,
     error: error || data?.error,
     task: data?.task,
     success: data?.success,
