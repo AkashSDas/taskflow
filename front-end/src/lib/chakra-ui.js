@@ -13,6 +13,7 @@ export var chakraTheme = extendTheme({
   },
   color: {
     border: "#EBE8E8",
+    primary: "#278BFF",
     bg1: "#FCFCFC",
     bg2: "#F3F3F3",
     text1: "#17191B",
@@ -20,5 +21,24 @@ export var chakraTheme = extendTheme({
     text3: "#FFFFFF",
     icon1: "#8B8B8B",
     icon2: "#B9B9B9",
+  },
+  components: {
+    Button: {
+      variants: {
+        primarySolid: {
+          bg: "#278BFF",
+          color: "#FFFFFF",
+          fontFamily: "heading",
+          px: pxToRem(12),
+        },
+
+        secondarySolid: {
+          bg: "#8B8B8B",
+          color: "#FFFFFF",
+          fontFamily: "heading",
+          px: pxToRem(12),
+        },
+      },
+    },
   },
 });

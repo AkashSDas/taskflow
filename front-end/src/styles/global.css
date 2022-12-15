@@ -2,3 +2,10 @@
   font-family: Cubano;
   src: url("/public/cubano.ttf");
 }
+
+.brand-text-gradient {
+  background: linear-gradient(to bottom, #278bff, #273dff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
