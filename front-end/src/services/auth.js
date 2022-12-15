@@ -39,3 +39,21 @@ export async function login(data) {
     message: response.data?.message,
   };
 }
+
+export async function logout() {
+  var response = await fetchFromAuth("logout", "get");
+
+  console.log(response);
+  if (response.status == 200) {
+    return {
+      success: response.success,
+      message: response.data.message,
+    };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+    message: response.data?.message,
+  };
+}

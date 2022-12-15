@@ -3,8 +3,14 @@ import { useAtom } from "jotai";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import AuthModal from "../modal/auth";
 import { authModalFormAtom } from "../../lib/atom";
+import { useUser } from "../../lib/hooks";
+import { useMutation } from "react-query";
+import { logout } from "../../services/auth";
+import { queryClient } from "../../lib/react-query";
+import { customToast } from "../shared/toast";
 
 export default function Navbar() {
+  var { user } = useUser();
   var { isOpen, onClose, onOpen } = useDisclosure();
 
   function AddTaskButton() {
@@ -57,6 +63,43 @@ export default function Navbar() {
     );
   }
 
+  function LogoutButton() {
+    var mutation = useMutation({
+      mutationFn: logout,
+      onMutate: async () => {
+        await queryClient.cancelQueries({ queryKey: ["new-access-token"] });
+        var previousAccessToken = queryClient.getQueryData([
+          "new-access-token",
+        ]);
+
+        queryClient.setQueryData(["new-access-token"], null);
+
+        return { previousAccessToken };
+      },
+      onError: (_error, _variables, context) => {
+        queryClient.setQueryData(
+          ["new-access-token"],
+          context?.previousAccessToken
+        );
+      },
+      onSettled: () => {
+        customToast(
+          "https://media.giphy.com/media/m9eG1qVjvN56H0MXt8/giphy-downsized.gif",
+          "Logout successful",
+          "success"
+        );
+
+        queryClient.invalidateQueries({ queryKey: ["new-access-token"] });
+      },
+    });
+
+    return (
+      <Button onClick={() => mutation.mutate()} variant="secondarySolid">
+        <Text>Logout</Text>
+      </Button>
+    );
+  }
+
   return (
     <HStack
       w="full"
@@ -72,8 +115,10 @@ export default function Navbar() {
         TaskFlow
       </Text>
 
+      {JSON.stringify(user)}
       <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
-        <LoginButton />
+        {!user && <LoginButton />}
+        {user && <LogoutButton />}
         <AddTaskButton />
       </HStack>
     </HStack>
