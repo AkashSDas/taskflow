@@ -43,10 +43,28 @@ export async function login(data) {
 export async function logout() {
   var response = await fetchFromAuth("logout", "get");
 
-  console.log(response);
   if (response.status == 200) {
     return {
       success: response.success,
+      message: response.data.message,
+    };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+    message: response.data?.message,
+  };
+}
+
+export async function signup(data) {
+  var response = await fetchFromAuth("signup", "post", data);
+
+  if (response.status == 20) {
+    return {
+      success: response.success,
+      user: response.data.user,
+      accessToken: response.data.accessToken,
       message: response.data.message,
     };
   }

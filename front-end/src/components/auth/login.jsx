@@ -35,7 +35,8 @@ export default function LoginForm({ onClose }) {
         await queryClient.invalidateQueries(["new-access-token"]);
         customToast(
           "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
-          "Login successful"
+          "Login successful",
+          "success"
         );
       } else {
         let errorMsg = response?.message ?? "Something went wrong";

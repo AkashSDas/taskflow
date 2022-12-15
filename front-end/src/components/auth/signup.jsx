@@ -14,19 +14,58 @@ import { signupSchema } from "../../lib/validation";
 import { pxToRem, chakraTheme } from "../../lib/chakra-ui";
 import { useAtom } from "jotai";
 import { authModalFormAtom } from "../../lib/atom";
+import { useMutation } from "react-query";
+import { queryClient } from "../../lib/react-query";
+import { signup } from "../../services/auth";
+import { customToast } from "../shared/toast";
 
-export default function SignupForm() {
+export default function SignupForm({ onClose }) {
   var [_form, setForm] = useAtom(authModalFormAtom);
   var { reset, register, handleSubmit, formState } = useForm({
     defaultValues: { email: "", password: "" },
     resolver: yupResolver(signupSchema),
   });
 
+  var mutation = useMutation({
+    mutationFn: (data) => signup(data),
+    onSuccess: async (response) => {
+      if (response.success) {
+        reset();
+        onClose();
+        await queryClient.invalidateQueries(["new-access-token"]);
+        customToast(
+          "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
+          "Signup successful",
+          "success"
+        );
+      } else {
+        let errorMsg = response?.message ?? "Something went wrong";
+        if (Array.isArray(response.error)) {
+          errorMsg = response.error[0].message;
+        }
+
+        customToast(
+          "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+          errorMsg,
+          "error"
+        );
+      }
+    },
+    onError: (error) => {
+      let errorMsg = error?.message ?? "Something went wrong";
+      customToast(
+        "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+        errorMsg,
+        "error"
+      );
+    },
+  });
+
   return (
     <VStack
       as="form"
       gap={pxToRem(32)}
-      onSubmit={handleSubmit((data) => console.log(data))}
+      onSubmit={handleSubmit((data) => mutation.mutate(data))}
     >
       {/* Email input */}
       <FormControl isInvalid={formState.errors.email ? true : false}>

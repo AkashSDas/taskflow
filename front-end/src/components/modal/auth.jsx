@@ -23,7 +23,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
   function AuthForm() {
     if (form == "login") return <LoginForm onClose={onClose} />;
-    return <SignupForm />;
+    return <SignupForm onClose={onClose} />;
   }
 
   return (
