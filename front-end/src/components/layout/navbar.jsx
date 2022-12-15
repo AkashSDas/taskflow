@@ -81,24 +81,25 @@ export default function Navbar() {
     );
   }
 
+  // TODO: check the value of previous access token
   function LogoutButton() {
     var mutation = useMutation({
       mutationFn: logout,
       onMutate: async () => {
         await queryClient.cancelQueries({ queryKey: ["new-access-token"] });
-        var previousAccessToken = queryClient.getQueryData([
-          "new-access-token",
-        ]);
+        var previousData = queryClient.getQueryData(["new-access-token"]);
 
-        queryClient.setQueryData(["new-access-token"], null);
+        queryClient.setQueryData(["new-access-token"], () => ({
+          accessToken: null,
+          success: true,
+          user: null,
+          error: null,
+        }));
 
-        return { previousAccessToken };
+        return { previousData };
       },
       onError: (_error, _variables, context) => {
-        queryClient.setQueryData(
-          ["new-access-token"],
-          context?.previousAccessToken
-        );
+        queryClient.setQueryData(["new-access-token"], context?.previousData);
       },
       onSettled: () => {
         customToast(

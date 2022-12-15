@@ -31,27 +31,23 @@ export default function TasksList() {
     var mutation = useMutation({
       mutationFn: () => deleteTask(taskId, accessToken),
       onMutate: async () => {
-        await queryClient.cancelQueries({ queryKey: ["tasks", taskId] });
-        var previousTasks = queryClient.getQueryData(["tasks"]);
+        await queryClient.cancelQueries({ queryKey: ["tasks"] });
+        var previousData = queryClient.getQueryData(["tasks"]);
         var updatedTasks = tasks.filter((t) => t._id != taskId);
-        console.log(updatedTasks);
-        queryClient.setQueryData(["tasks", taskId], updatedTasks);
-        return { previousTasks, taskId };
-      },
-      onSuccess: (response) => {
-        if (response.success) {
-          customToast(
-            "https://media.giphy.com/media/O3GqAYR9jFxLi/giphy.gif",
-            "Task deleted",
-            "success"
-          );
-        }
+        queryClient.setQueryData(["tasks"], () => {
+          return { tasks: updatedTasks, success: true };
+        });
+
+        customToast(
+          "https://media.giphy.com/media/O3GqAYR9jFxLi/giphy.gif",
+          "Task deleted",
+          "success"
+        );
+
+        return { previousData };
       },
       onError: (_err, _variables, context) => {
-        queryClient.setQueryData(
-          ["tasks", context.taskId],
-          context.previousTasks
-        );
+        queryClient.setQueryData(["tasks"], context?.previousData);
       },
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: ["tasks"] });
