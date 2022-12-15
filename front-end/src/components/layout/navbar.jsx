@@ -8,13 +8,31 @@ import { useMutation } from "react-query";
 import { logout } from "../../services/auth";
 import { queryClient } from "../../lib/react-query";
 import { customToast } from "../shared/toast";
+import CreateTaskModal from "../modal/create-task";
 
 export default function Navbar() {
   var { user } = useUser();
   var { isOpen, onClose, onOpen } = useDisclosure();
+  var {
+    isOpen: isAddTaskOpen,
+    onClose: onAddTaskClose,
+    onOpen: onAddTaskOpen,
+  } = useDisclosure();
 
   function AddTaskButton() {
     var [_form, setForm] = useAtom(authModalFormAtom);
+
+    if (user) {
+      return (
+        <Button onClick={onAddTaskOpen} variant="primarySolid">
+          <HStack>
+            <AddIcon />
+            <Text>Add Task</Text>
+            <CreateTaskModal isOpen={isAddTaskOpen} onClose={onAddTaskClose} />
+          </HStack>
+        </Button>
+      );
+    }
 
     return (
       <Button
