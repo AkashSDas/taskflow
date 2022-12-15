@@ -6,6 +6,7 @@ import {
   FormLabel,
   Input,
   Button,
+  Box,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -75,11 +76,21 @@ export default function SignupForm() {
         {formState.isSubmitting ? "Loading..." : "Signup"}
       </Button>
 
-      <Text fontWeight="semibold" fontSize="sm" color={chakraTheme.color.text2}>
-        Already have an account?{" "}
+      <Box>
+        <Text
+          display="inline"
+          fontWeight="semibold"
+          fontSize="sm"
+          color={chakraTheme.color.text2}
+        >
+          Already have an account?{" "}
+        </Text>
+
         <Text
           display="inline"
           cursor="pointer"
+          fontWeight="semibold"
+          fontSize="sm"
           color={chakraTheme.color.primary}
           onClick={() => {
             reset();
@@ -88,7 +99,7 @@ export default function SignupForm() {
         >
           Login
         </Text>
-      </Text>
+      </Box>
     </VStack>
   );
 }
