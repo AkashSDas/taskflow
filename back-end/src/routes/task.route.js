@@ -4,6 +4,7 @@ import {
   createTaskController,
   deleteTaskController,
   getAllTasksController,
+  getTaskController,
   removeTodoController,
   updateTodoStatusController,
 } from "../controllers/task.controller.js";
@@ -68,5 +69,12 @@ router.delete(
   "/:taskId",
   handleMiddlewareError(verifyJwt),
   handleMiddlewareError(deleteTaskController),
+  sendErrorResponse
+);
+
+router.get(
+  "/:taskId",
+  handleMiddlewareError(verifyJwt),
+  handleMiddlewareError(getTaskController),
   sendErrorResponse
 );

@@ -93,3 +93,15 @@ export async function deleteTaskController(req, res) {
   if (!task) return res.status(404).json({ message: "Task not found" });
   return res.status(200).json({ task });
 }
+
+export async function getTaskController(req, res) {
+  var user = res.locals.user;
+  var taskId = req.params.taskId;
+
+  var task = await Task.findOne({
+    $and: [{ _id: taskId }, { assigns: { $in: user._id } }],
+  }).populate("assigns");
+
+  if (!task) return res.status(404).json({ message: "Task not found" });
+  return res.status(200).json({ task });
+}
