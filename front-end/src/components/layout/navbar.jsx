@@ -1,9 +1,21 @@
 import { Button, HStack, Icon, Text, useDisclosure } from "@chakra-ui/react";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
-import SignupModal from "../modal/signup";
+import AuthModal from "../modal/auth";
 
 export default function Navbar() {
   var { isOpen, onClose, onOpen } = useDisclosure();
+
+  function AddTaskButton() {
+    return (
+      <Button onClick={onOpen} variant="primarySolid">
+        <HStack>
+          <AddIcon />
+          <Text>Add Task</Text>
+          <AuthModal isOpen={isOpen} onClose={onClose} form="signup" />
+        </HStack>
+      </Button>
+    );
+  }
 
   return (
     <HStack
@@ -21,18 +33,8 @@ export default function Navbar() {
       </Text>
 
       <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
-        {/* Login button */}
         <Button variant="secondarySolid">Login</Button>
-
-        {/* Add task button */}
-        <Button onClick={onOpen} variant="primarySolid">
-          <HStack>
-            <AddIcon />
-            <Text>Add Task</Text>
-          </HStack>
-
-          <SignupModal isOpen={isOpen} onClose={onClose} />
-        </Button>
+        <AddTaskButton />
       </HStack>
     </HStack>
   );
