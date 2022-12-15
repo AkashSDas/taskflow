@@ -13,9 +13,12 @@ import {
 } from "@chakra-ui/react";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import Loader from "../shared/loader";
-import { useTask } from "../../lib/hooks";
+import { useTask, useUser } from "../../lib/hooks";
 import CreateTodoModal from "../modal/create-todo";
 import { DeleteIcon } from "./tasks-list";
+import { useMutation } from "react-query";
+import { updateTodoStatus } from "../../services/task";
+import { queryClient } from "../../lib/react-query";
 
 export default function Task() {
   var { loading, task } = useTask();
@@ -81,23 +84,60 @@ export default function Task() {
           <AddTodoButton />
         </HStack>
 
-        <Todos todos={task.todos} />
+        <Todos taskId={task._id} todos={task.todos} />
       </VStack>
     </VStack>
   );
 }
 
-function Todos({ todos }) {
+function Todos({ taskId, todos }) {
   return (
     <VStack w="full">
       {todos.map((todo) => (
-        <Todo todo={todo} />
+        <Todo key={todo._id} taskId={taskId} todo={todo} />
       ))}
     </VStack>
   );
 }
 
-function Todo({ todo }) {
+function Todo({ taskId, todo }) {
+  var { accessToken } = useUser();
+  var mutate = useMutation({
+    mutationFn: () => {
+      return updateTodoStatus(todo._id, taskId, !todo.done, accessToken);
+    },
+
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["task", taskId] });
+      var previousData = queryClient.getQueryData(["task", taskId]);
+      console.log(previousData);
+      var updatedTask = {
+        ...previousData,
+        task: {
+          ...previousData.task,
+          todos: previousData.task.todos.map((t) => {
+            if (t._id == todo._id) {
+              return { ...todo, done: !todo.done };
+            }
+            return t;
+          }),
+        },
+      };
+
+      queryClient.setQueryData(["task", taskId], () => {
+        return { ...updatedTask };
+      });
+
+      return { previousData, taskId };
+    },
+    onError: (_err, _variables, context) => {
+      queryClient.setQueryData(["todo", context.taskId], context?.previousData);
+    },
+    onSettled: (_newData, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["tasks", variables?.taskId] });
+    },
+  });
+
   return (
     <HStack
       role="group"
@@ -110,7 +150,21 @@ function Todo({ todo }) {
       rounded="md"
       _hover={{ bg: chakraTheme.color.bg2 }}
     >
-      <DoneIcon />
+      <IconButton
+        h={pxToRem(26)}
+        w={pxToRem(26)}
+        p={pxToRem(4)}
+        rounded="md"
+        variant="ghost"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        onClick={() => mutate.mutate()}
+        disabled={mutate.isLoading}
+      >
+        <DoneIcon done={todo.done} />
+      </IconButton>
+
       <Text flexGrow={1} color={chakraTheme.color.text2} fontWeight="semibold">
         {todo.title}
       </Text>
@@ -124,33 +178,22 @@ function Todo({ todo }) {
 
 function DoneIcon({ done }) {
   return (
-    <IconButton
-      h={pxToRem(26)}
-      w={pxToRem(26)}
-      p={pxToRem(4)}
-      rounded="md"
-      variant="ghost"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Icon display="block" w={pxToRem(20)} h={pxToRem(20)} cursor="pointer">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2 13L5.52642 15.8211C6.35374 16.483 7.55365 16.3848 8.2624 15.5973L16 7M8 13L11.5264 15.8211C12.3537 16.483 13.5536 16.3848 14.2624 15.5973L22 7"
-            stroke={done ? "#3EAE6B" : "#B9B9B9"}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </Icon>
-    </IconButton>
+    <Icon display="block" w={pxToRem(20)} h={pxToRem(20)} cursor="pointer">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2 13L5.52642 15.8211C6.35374 16.483 7.55365 16.3848 8.2624 15.5973L16 7M8 13L11.5264 15.8211C12.3537 16.483 13.5536 16.3848 14.2624 15.5973L22 7"
+          stroke={done ? "#3EAE6B" : "#B9B9B9"}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </Icon>
   );
 }
