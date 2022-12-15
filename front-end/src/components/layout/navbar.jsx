@@ -1,5 +1,42 @@
-import { Box, Button, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
+import { Button, HStack, Icon, Text, useDisclosure } from "@chakra-ui/react";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
+import SignupModal from "../modal/signup";
+
+export default function Navbar() {
+  var { isOpen, onClose, onOpen } = useDisclosure();
+
+  return (
+    <HStack
+      w="full"
+      justifyContent="space-between"
+      alignItems="center"
+      gap={pxToRem(16)}
+      h={pxToRem(48)}
+      px={{ base: pxToRem(16), md: pxToRem(32) }}
+      borderBottom="1px solid"
+      borderColor={chakraTheme.color.border}
+    >
+      <Text fontFamily="heading" fontSize="xl" className="brand-text-gradient">
+        TaskFlow
+      </Text>
+
+      <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
+        {/* Login button */}
+        <Button variant="secondarySolid">Login</Button>
+
+        {/* Add task button */}
+        <Button onClick={onOpen} variant="primarySolid">
+          <HStack>
+            <AddIcon />
+            <Text>Add Task</Text>
+          </HStack>
+
+          <SignupModal isOpen={isOpen} onClose={onClose} />
+        </Button>
+      </HStack>
+    </HStack>
+  );
+}
 
 function AddIcon() {
   return (
@@ -33,37 +70,5 @@ function AddIcon() {
         />
       </svg>
     </Icon>
-  );
-}
-
-export default function Navbar() {
-  return (
-    <HStack
-      w="full"
-      justifyContent="space-between"
-      alignItems="center"
-      gap={pxToRem(16)}
-      h={pxToRem(48)}
-      px={{ base: pxToRem(16), md: pxToRem(32) }}
-      borderBottom="1px solid"
-      borderColor={chakraTheme.color.border}
-    >
-      <Text fontFamily="heading" fontSize="xl" className="brand-text-gradient">
-        TaskFlow
-      </Text>
-
-      <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
-        {/* Login button */}
-        <Button variant="secondarySolid">Login</Button>
-
-        {/* Add task button */}
-        <Button variant="primarySolid">
-          <HStack>
-            <AddIcon />
-            <Text>Add Task</Text>
-          </HStack>
-        </Button>
-      </HStack>
-    </HStack>
   );
 }
