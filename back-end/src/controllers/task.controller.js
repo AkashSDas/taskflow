@@ -75,3 +75,9 @@ export async function removeTodoController(req, res) {
   if (!task) return res.status(404).json({ message: "Task not found" });
   return res.status(200).json({ task });
 }
+
+export async function getAllTasksController(req, res) {
+  var user = res.locals.user;
+  var tasks = await Task.find({ assigns: { $in: user._id } });
+  return res.status(200).json({ tasks });
+}

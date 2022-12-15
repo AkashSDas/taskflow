@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addTodoController,
   createTaskController,
+  getAllTasksController,
   removeTodoController,
   updateTodoStatusController,
 } from "../controllers/task.controller.js";
@@ -50,5 +51,13 @@ router.delete(
   "/:taskId/todo/:todoId",
   handleMiddlewareError(verifyJwt),
   handleMiddlewareError(removeTodoController),
+  sendErrorResponse
+);
+
+// Get all tasks
+router.get(
+  "",
+  handleMiddlewareError(verifyJwt),
+  handleMiddlewareError(getAllTasksController),
   sendErrorResponse
 );
