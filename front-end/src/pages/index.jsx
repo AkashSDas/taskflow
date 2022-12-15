@@ -1,9 +1,11 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 
 export default function HomePage() {
   return (
     <Box>
-      <h1>Home Page</h1>
+      <Text fontFamily="Urbanist" fontWeight={700}>
+        Home Page
+      </Text>
     </Box>
   );
 }
