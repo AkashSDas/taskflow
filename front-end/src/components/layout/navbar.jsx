@@ -155,13 +155,7 @@ export default function Navbar() {
 
 function AddIcon() {
   return (
-    <Icon
-      display="block"
-      className="icon"
-      w={pxToRem(24)}
-      h={pxToRem(24)}
-      cursor="pointer"
-    >
+    <Icon display="block" w={pxToRem(24)} h={pxToRem(24)} cursor="pointer">
       <svg
         width="24"
         height="24"
