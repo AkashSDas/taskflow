@@ -30,9 +30,9 @@ export default function LoginForm({ onClose }) {
     mutationFn: (data) => login(data),
     onSuccess: async (response) => {
       if (response.success) {
+        await queryClient.invalidateQueries(["new-access-token"]);
         reset();
         onClose();
-        await queryClient.invalidateQueries(["new-access-token"]);
         customToast(
           "https://media.giphy.com/media/CM67cI6BSH9ks/giphy-downsized.gif",
           "Login successful",
