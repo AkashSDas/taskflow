@@ -13,10 +13,11 @@ export async function fetchFromAPI(URL, method, data, accessToken) {
     });
     var data = await response.json();
     var success = response.status >= 200 && response.status < 300;
+    var status = response.status;
   } catch (err) {
     var error = err;
     var success = false;
   }
 
-  return { data, error, success };
+  return { data, error, success, status: status ?? 500 };
 }

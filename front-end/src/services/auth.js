@@ -6,6 +6,7 @@ function fetchFromAuth(URL, method, data, accessToken) {
 
 export async function getNewAccessToken() {
   var response = await fetchFromAuth("access-token", "get");
+
   if (response.status == 200) {
     return {
       success: response.success,
@@ -31,8 +32,6 @@ export async function login(data) {
       message: response.data.message,
     };
   }
-
-  console.log(response);
 
   return {
     success: response.success,
