@@ -33,6 +33,30 @@ export default function Navbar() {
     );
   }
 
+  function LoginButton() {
+    var [_form, setForm] = useAtom(authModalFormAtom);
+
+    return (
+      <Button
+        onClick={() => {
+          onOpen();
+          setForm("login");
+        }}
+        variant="secondarySolid"
+      >
+        <Text>Login</Text>
+
+        <AuthModal
+          isOpen={isOpen}
+          onClose={() => {
+            onClose();
+            setForm(null);
+          }}
+        />
+      </Button>
+    );
+  }
+
   return (
     <HStack
       w="full"
@@ -49,7 +73,7 @@ export default function Navbar() {
       </Text>
 
       <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
-        <Button variant="secondarySolid">Login</Button>
+        <LoginButton />
         <AddTaskButton />
       </HStack>
     </HStack>
