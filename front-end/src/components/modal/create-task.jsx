@@ -98,6 +98,7 @@ function AddTaskForm({ onClose }) {
         <FormLabel htmlFor="title">Title</FormLabel>
         <Input
           type="text"
+          autoFocus
           {...register("title")}
           borderColor={
             formState.errors.title

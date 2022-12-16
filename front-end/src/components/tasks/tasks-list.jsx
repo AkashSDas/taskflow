@@ -64,7 +64,10 @@ export default function TasksList() {
         justifyContent="center"
         alignItems="center"
         disabled={mutation.isLoading}
-        onClick={() => mutation.mutate()}
+        onClick={(e) => {
+          e.stopPropagation();
+          mutation.mutate();
+        }}
       >
         <DeleteIcon />
       </IconButton>
