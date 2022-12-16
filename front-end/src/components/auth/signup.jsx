@@ -158,8 +158,17 @@ export default function SignupForm({ onClose }) {
           fontSize="sm"
           color={chakraTheme.color.primary}
           onClick={() => {
-            reset();
-            setForm("appwrite-signup");
+            if (import.meta.env.MODE == "production") {
+              customToast(
+                "https://media.giphy.com/media/YrNSnsXGZHXO/giphy.gif",
+                "Appwrite is not supported in production mode",
+                "error"
+              );
+              return;
+            } else {
+              reset();
+              setForm("appwrite-signup");
+            }
           }}
         >
           Signup
