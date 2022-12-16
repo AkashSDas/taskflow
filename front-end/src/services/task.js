@@ -135,9 +135,8 @@ export async function updateTaskStatus(taskId, status, accessToken) {
 }
 
 export async function searchTasks(query, accessToken) {
-  var queryParam = new URLSearchParams(`query=${query}`);
   var response = await fetchFromTask(
-    `search?${queryParam.toString()}`,
+    `search?query=${query}`,
     "get",
     null,
     accessToken
