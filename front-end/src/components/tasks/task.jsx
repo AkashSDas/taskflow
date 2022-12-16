@@ -314,7 +314,7 @@ function Todo({ taskId, todo }) {
   );
 }
 
-function DoneIcon({ done }) {
+export function DoneIcon({ done }) {
   return (
     <Icon display="block" w={pxToRem(20)} h={pxToRem(20)} cursor="pointer">
       <svg
