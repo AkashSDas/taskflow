@@ -1,6 +1,8 @@
 # taskflow
 
-Minimalist task management app for managing your 🧤 tasks. It's a full-stack app built with JavaScript, ReactJS, ExpressJS, and MongoDB.
+Minimalist task management app for managing your 🧤 tasks. It's a full-stack app built with JavaScript, ReactJS, ExpressJS, and MongoDB. It's 🌍 live on [taskflow.vercel.app](https://taskflow.vercel.app/).
+
+![Taskflow](./taskflow.gif)
 
 ## Features
 
