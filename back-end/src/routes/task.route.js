@@ -6,6 +6,7 @@ import {
   getAllTasksController,
   getTaskController,
   removeTodoController,
+  updateTaskStatusController,
   updateTodoStatusController,
 } from "../controllers/task.controller.js";
 import { validateResource } from "../middlewares/zod.middleware.js";
@@ -76,5 +77,13 @@ router.get(
   "/:taskId",
   handleMiddlewareError(verifyJwt),
   handleMiddlewareError(getTaskController),
+  sendErrorResponse
+);
+
+router.put(
+  "/:taskId/status",
+  validateResource(z.updateTaskStatusSchema),
+  handleMiddlewareError(verifyJwt),
+  handleMiddlewareError(updateTaskStatusController),
   sendErrorResponse
 );

@@ -105,3 +105,17 @@ export async function getTaskController(req, res) {
   if (!task) return res.status(404).json({ message: "Task not found" });
   return res.status(200).json({ task });
 }
+
+export async function updateTaskStatusController(req, res) {
+  var user = res.locals.user;
+  var taskId = req.params.taskId;
+
+  var task = await Task.findOneAndUpdate(
+    { $and: [{ _id: taskId }, { assigns: { $in: user._id } }] },
+    { $set: { status: req.body.status } },
+    { new: true }
+  );
+
+  if (!task) return res.status(404).json({ message: "Task not found" });
+  return res.status(200).json({ task });
+}
