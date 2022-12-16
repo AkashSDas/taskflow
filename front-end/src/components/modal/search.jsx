@@ -12,12 +12,17 @@ import {
   Input,
   FormErrorMessage,
   Button,
+  Divider,
+  Heading,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { searchSchema } from "../../lib/validation";
-import { pxToRem } from "../../lib/chakra-ui";
+import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import { useUser } from "../../lib/hooks";
+import debounce from "lodash.debounce";
+import { useCallback, useState } from "react";
+import { searchTasks } from "../../services/task";
 
 export default function SearchModal({ isOpen, onClose }) {
   return (
@@ -41,48 +46,45 @@ export default function SearchModal({ isOpen, onClose }) {
 
 function SearchForm({ onClose }) {
   var { accessToken } = useUser();
-  var { reset, register, handleSubmit, formState } = useForm({
-    defaultValues: { query: "" },
-    resolver: yupResolver(searchSchema),
-  });
+  var [search, setSearch] = useState("");
+  var [results, setResults] = useState([]);
+
+  var queryCallback = useCallback(
+    debounce(async (value) => {
+      var response = await searchTasks(value, accessToken);
+      console.log(response);
+    }, 500)
+  );
 
   async function onSubmit(data) {
-    if (!accessToken || !taskId) return;
+    if (!accessToken || data.query.length < 3) return;
+    await queryCallback(data.query);
   }
 
   return (
     <VStack
       as="form"
       gap={pxToRem(32)}
-      onSubmit={handleSubmit((data) => onSubmit(data))}
+      onSubmit={(e) => e.preventDefault()}
+      alignItems="flex-start"
     >
       {/* Title input */}
-      <FormControl isInvalid={formState.errors.query ? true : false}>
+      <FormControl>
         <FormLabel htmlFor="query">Query</FormLabel>
         <Input
           type="text"
-          {...register("query")}
+          value={search}
+          onChange={async (e) => {
+            setSearch(e.target.value);
+            await onSubmit({ query: e.target.value });
+          }}
           autoFocus
-          borderColor={
-            formState.errors.query
-              ? "red.500"
-              : formState.touchedFields.query
-              ? "green.500"
-              : "#EBE8E8"
-          }
         />
-        <FormErrorMessage>{formState.errors.query?.message}</FormErrorMessage>
       </FormControl>
 
-      {/* Submit button */}
-      <Button
-        variant="primarySolid"
-        type="submit"
-        disabled={formState.isSubmitting}
-        px={pxToRem(32)}
-      >
-        {formState.isSubmitting ? "Loading..." : "Search"}
-      </Button>
+      <Divider bg={chakraTheme.color.border} />
+
+      <Heading fontSize="lg">Results</Heading>
     </VStack>
   );
 }

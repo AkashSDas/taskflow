@@ -133,3 +133,22 @@ export async function updateTaskStatus(taskId, status, accessToken) {
     error: response.error ?? response.data?.error,
   };
 }
+
+export async function searchTasks(query, accessToken) {
+  var queryParam = new URLSearchParams(`query=${query}`);
+  var response = await fetchFromTask(
+    `search?${queryParam.toString()}`,
+    "get",
+    null,
+    accessToken
+  );
+
+  if (response.status == 200) {
+    return { success: response.success, tasks: response.data.tasks };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
+}
