@@ -122,10 +122,10 @@ export async function updateTaskStatusController(req, res) {
 
 export async function searchTasksController(req, res) {
   var user = res.locals.user;
-  var { title } = req.query;
+  var { query } = req.query;
 
   var tasks = await Task.find({
-    $and: [{ title: { $regex: title, $options: "i" } }, { assigns: user._id }],
+    $and: [{ title: { $regex: query, $options: "i" } }, { assigns: user._id }],
   });
 
   return res.status(200).json({ tasks });

@@ -52,3 +52,12 @@ export var updateTaskStatusSchema = z.object({
     status: z.enum(Object.values(Status), { required_error: "Required" }),
   }),
 });
+
+export var searchTasksSchema = z.object({
+  query: z.object({
+    query: z
+      .string({ required_error: "Required" })
+      .min(3, "Too short")
+      .max(64, "Too long"),
+  }),
+});

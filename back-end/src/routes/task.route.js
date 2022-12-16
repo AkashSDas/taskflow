@@ -32,6 +32,14 @@ router.post(
   sendErrorResponse
 );
 
+router.get(
+  "/search",
+  validateResource(z.searchTasksSchema),
+  handleMiddlewareError(verifyJwt),
+  handleMiddlewareError(searchTasksController),
+  sendErrorResponse
+);
+
 // Add todo
 router.put(
   "/:taskId/todo",
@@ -86,13 +94,5 @@ router.put(
   validateResource(z.updateTaskStatusSchema),
   handleMiddlewareError(verifyJwt),
   handleMiddlewareError(updateTaskStatusController),
-  sendErrorResponse
-);
-
-router.get(
-  "/:taskId/search",
-  validateResource(z.searchTasksSchema),
-  handleMiddlewareError(verifyJwt),
-  handleMiddlewareError(searchTasksController),
   sendErrorResponse
 );
