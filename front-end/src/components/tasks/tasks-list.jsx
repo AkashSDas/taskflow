@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 export default function TasksList() {
   var { user, accessToken } = useUser();
   var { tasks, loading } = useTasks();
+  var navigate = useNavigate();
 
   if (loading) {
     return (
@@ -69,8 +70,6 @@ export default function TasksList() {
       </IconButton>
     );
   }
-
-  var navigate = useNavigate();
 
   return (
     <VStack
