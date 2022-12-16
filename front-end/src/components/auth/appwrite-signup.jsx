@@ -18,8 +18,10 @@ import { useMutation } from "react-query";
 import { queryClient } from "../../lib/react-query";
 import { signup } from "../../services/auth";
 import { customToast } from "../shared/toast";
+import { account } from "../../lib/appwrite";
+import { ID } from "appwrite";
 
-export default function SignupForm({ onClose }) {
+export default function AppWriteSignupForm({ onClose }) {
   var [_form, setForm] = useAtom(authModalFormAtom);
   var { reset, register, handleSubmit, formState } = useForm({
     defaultValues: { email: "", password: "" },
@@ -61,11 +63,61 @@ export default function SignupForm({ onClose }) {
     },
   });
 
+  async function appWriteSignup(data) {
+    // Create account
+    try {
+      let userAccount = await account.create(
+        ID.unique(),
+        data.email,
+        data.password
+      );
+
+      await mutation.mutateAsync(data);
+    } catch (error) {
+      console.log(error);
+    }
+
+    // console.log(userAccount);
+
+    // Signup data
+    //   {
+    //     "$id": "639c5cfe17d20b38f509",
+    //     "$createdAt": "2022-12-16T11:56:46.231+00:00",
+    //     "$updatedAt": "2022-12-16T11:56:46.231+00:00",
+    //     "name": "",
+    //     "registration": "2022-12-16T11:56:46.231+00:00",
+    //     "status": true,
+    //     "passwordUpdate": "2022-12-16T11:56:46.231+00:00",
+    //     "email": "fun@gmail.com",
+    //     "phone": "",
+    //     "emailVerification": false,
+    //     "phoneVerification": false,
+    //     "prefs": {}
+    // }
+
+    // Login
+    // var userLogin = await account.createEmailSession(data.email, data.password);
+    // console.log(userLogin);
+
+    // Login data data
+    //   {
+    //     "$id": "639c5e4e21780cedb5cb",
+    //     "$createdAt": "2022-12-16T12:02:22.149+00:00",
+    //     "userId": "639c5cfe17d20b38f509",
+    //     "expire": "2023-12-16 12:02:22.137",
+    //     "provider": "email",
+    //     "providerUid": "fun@gmail.com",
+    //     "providerAccessToken": "",
+    //     "providerAccessTokenExpiry": "",
+    //     "providerRefreshToken": "",
+    // }
+  }
+
   return (
     <VStack
       as="form"
       gap={pxToRem(32)}
-      onSubmit={handleSubmit((data) => mutation.mutate(data))}
+      onSubmit={handleSubmit((data) => appWriteSignup(data))}
     >
       {/* Email input */}
       <FormControl isInvalid={formState.errors.email ? true : false}>
@@ -138,31 +190,6 @@ export default function SignupForm({ onClose }) {
           }}
         >
           Login
-        </Text>
-      </Box>
-
-      <Box>
-        <Text
-          display="inline"
-          fontWeight="semibold"
-          fontSize="sm"
-          color={chakraTheme.color.text2}
-        >
-          Use AppWrite for signup?{" "}
-        </Text>
-
-        <Text
-          display="inline"
-          cursor="pointer"
-          fontWeight="semibold"
-          fontSize="sm"
-          color={chakraTheme.color.primary}
-          onClick={() => {
-            reset();
-            setForm("appwrite-signup");
-          }}
-        >
-          Signup
         </Text>
       </Box>
     </VStack>
