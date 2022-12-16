@@ -6,7 +6,7 @@ import {
   getAllTasksController,
   getTaskController,
   removeTodoController,
-  searchTaskController,
+  searchTasksController,
   updateTaskStatusController,
   updateTodoStatusController,
 } from "../controllers/task.controller.js";
@@ -91,8 +91,8 @@ router.put(
 
 router.get(
   "/:taskId/search",
-  validateResource(z.searchTaskSchema),
+  validateResource(z.searchTasksSchema),
   handleMiddlewareError(verifyJwt),
-  handleMiddlewareError(searchTaskController),
+  handleMiddlewareError(searchTasksController),
   sendErrorResponse
 );

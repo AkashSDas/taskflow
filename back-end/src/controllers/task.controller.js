@@ -120,7 +120,7 @@ export async function updateTaskStatusController(req, res) {
   return res.status(200).json({ task });
 }
 
-export async function searchTaskController(req, res) {
+export async function searchTasksController(req, res) {
   var user = res.locals.user;
   var { title } = req.query;
 
