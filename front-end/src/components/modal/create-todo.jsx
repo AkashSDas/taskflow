@@ -99,6 +99,7 @@ function AddTodoForm({ onClose }) {
         <Input
           type="text"
           {...register("title")}
+          autoFocus
           borderColor={
             formState.errors.title
               ? "red.500"

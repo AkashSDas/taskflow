@@ -73,6 +73,7 @@ export default function SignupForm({ onClose }) {
         <Input
           type="email"
           {...register("email")}
+          autoFocus
           borderColor={
             formState.errors.email
               ? "red.500"
