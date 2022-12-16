@@ -9,6 +9,7 @@ import { logout } from "../../services/auth";
 import { queryClient } from "../../lib/react-query";
 import { customToast } from "../shared/toast";
 import CreateTaskModal from "../modal/create-task";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 export default function Navbar() {
   var { user } = useUser();
@@ -130,9 +131,15 @@ export default function Navbar() {
       borderBottom="1px solid"
       borderColor={chakraTheme.color.border}
     >
-      <Text fontFamily="heading" fontSize="xl" className="brand-text-gradient">
-        TaskFlow
-      </Text>
+      <ReactRouterLink to="/">
+        <Text
+          fontFamily="heading"
+          fontSize="xl"
+          className="brand-text-gradient"
+        >
+          TaskFlow
+        </Text>
+      </ReactRouterLink>
 
       <HStack gap={pxToRem(24)} justifyContent="flex-end" alignItems="center">
         {user && (
