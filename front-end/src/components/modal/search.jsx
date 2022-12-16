@@ -19,6 +19,7 @@ import debounce from "lodash.debounce";
 import { useCallback, useState } from "react";
 import { searchTasks } from "../../services/task";
 import { DoneIcon, Status } from "../tasks/task";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SearchModal({ isOpen, onClose }) {
   return (
@@ -82,7 +83,7 @@ function SearchForm({ onClose }) {
 
       <VStack w="full">
         {results.map((task) => (
-          <Task key={task._id} task={task} />
+          <Task onClose={onClose} key={task._id} task={task} />
         ))}
 
         {results.length == 0 && (
@@ -105,7 +106,9 @@ function SearchForm({ onClose }) {
   );
 }
 
-function Task({ task }) {
+function Task({ onClose, task }) {
+  var navigate = useNavigate();
+
   return (
     <HStack
       role="group"
@@ -116,7 +119,12 @@ function Task({ task }) {
       px={pxToRem(8)}
       py={pxToRem(6)}
       rounded="md"
+      cursor="pointer"
       _hover={{ bg: chakraTheme.color.bg2 }}
+      onClick={() => {
+        onClose();
+        navigate(`/task/${task._id}`);
+      }}
     >
       <DoneIcon done={task.status == Status.DONE ? true : false} />
 
