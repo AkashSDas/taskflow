@@ -1,4 +1,12 @@
-import { Box, HStack, Icon, IconButton, Text, VStack } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import Loader from "../shared/loader";
 import { useTasks, useUser } from "../../lib/hooks";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
@@ -7,6 +15,7 @@ import { deleteTask } from "../../services/task";
 import { queryClient } from "../../lib/react-query";
 import { customToast } from "../shared/toast";
 import { useNavigate } from "react-router-dom";
+import { Status } from "./task";
 
 export default function TasksList() {
   var { user, accessToken } = useUser();
@@ -84,9 +93,9 @@ export default function TasksList() {
       {tasks?.map((task) => (
         <HStack
           key={task._id}
-          h={pxToRem(56)}
           w={pxToRem(500)}
           px={pxToRem(16)}
+          py={pxToRem(8)}
           gap={pxToRem(12)}
           rounded="md"
           border="1px solid"
@@ -98,13 +107,32 @@ export default function TasksList() {
           role="group"
           onClick={() => navigate(`/task/${task._id}`)}
         >
-          <Text
-            flexGrow={1}
-            fontWeight="semibold"
-            color={chakraTheme.color.text2}
-          >
-            {task.title}
-          </Text>
+          <VStack flexGrow={1} alignItems="start">
+            <Text fontWeight="semibold" color={chakraTheme.color.text2}>
+              {task.title}
+            </Text>
+
+            <Badge
+              variant="solid"
+              bg={
+                task.status == Status.DONE
+                  ? "green.100"
+                  : task.status == Status.IN_PROGRESS
+                  ? "yellow.100"
+                  : "red.100"
+              }
+              color={
+                task.status == Status.DONE
+                  ? "green.500"
+                  : task.status == Status.IN_PROGRESS
+                  ? "yellow.500"
+                  : "red.500"
+              }
+              fontSize="sm"
+            >
+              {task.status}
+            </Badge>
+          </VStack>
 
           <Box visibility="hidden" _groupHover={{ visibility: "visible" }}>
             <DeleteButton taskId={task._id} />
