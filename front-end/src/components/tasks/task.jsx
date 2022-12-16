@@ -13,13 +13,23 @@ import {
 } from "@chakra-ui/react";
 import { chakraTheme, pxToRem } from "../../lib/chakra-ui";
 import Loader from "../shared/loader";
-import { useTask, useUser } from "../../lib/hooks";
+import { useDropdown, useTask, useUser } from "../../lib/hooks";
 import CreateTodoModal from "../modal/create-todo";
 import { DeleteIcon } from "./tasks-list";
 import { useMutation } from "react-query";
-import { deleteTodo, updateTodoStatus } from "../../services/task";
+import {
+  deleteTodo,
+  updateTaskStatus,
+  updateTodoStatus,
+} from "../../services/task";
 import { queryClient } from "../../lib/react-query";
 import { customToast } from "../shared/toast";
+
+export var Status = {
+  NOT_STARTED: "not started",
+  IN_PROGRESS: "in progress",
+  DONE: "done",
+};
 
 export default function Task() {
   var { loading, task } = useTask();
@@ -33,7 +43,95 @@ export default function Task() {
   }
 
   function TaskStatus() {
-    return <Badge variant="solid">{task.status}</Badge>;
+    var { accessToken } = useUser();
+    var { isOpen, setIsOpen, wrapperRef } = useDropdown();
+
+    var mutate = useMutation({
+      mutationFn: (status) => updateTaskStatus(task._id, status, accessToken),
+      onMutate: async (status) => {
+        await queryClient.cancelQueries({ queryKey: ["task", task._id] });
+        var previousData = queryClient.getQueryData(["task", task._id]);
+        queryClient.setQueryData(["task", task._id], {
+          ...previousData,
+          task: { ...previousData.task, status },
+        });
+        return { previousData };
+      },
+      onError: (_err, _status, context) => {
+        queryClient.setQueryData(["task", task._id], context.previousData);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["task", task._id] });
+      },
+    });
+
+    return (
+      <Box ref={wrapperRef} position="relative">
+        <Badge
+          cursor="pointer"
+          variant="solid"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {task.status}
+        </Badge>
+
+        {isOpen && (
+          <VStack
+            position="absolute"
+            shadow="md"
+            border="1px solid"
+            borderColor={chakraTheme.color.border}
+            rounded="md"
+            bg={chakraTheme.color.bg1}
+            gap={pxToRem(2)}
+            alignItems="start"
+            px={pxToRem(4)}
+            py={pxToRem(8)}
+            w={pxToRem(120)}
+            top={0}
+            zIndex={1}
+          >
+            <Badge
+              bg="gray.100"
+              color="gray.500"
+              cursor="pointer"
+              variant="solid"
+              onClick={() => {
+                setIsOpen(!isOpen);
+                mutate.mutate(Status.NOT_STARTED);
+              }}
+              _hover={{ filter: "brightness(0.95)" }}
+            >
+              Not started
+            </Badge>
+            <Badge
+              cursor="pointer"
+              variant="solid"
+              onClick={() => {
+                setIsOpen(!isOpen);
+                mutate.mutate(Status.IN_PROGRESS);
+              }}
+              _hover={{ filter: "brightness(0.95)" }}
+            >
+              In progress
+            </Badge>
+            <Badge
+              bg="green.100"
+              color="green.500"
+              cursor="pointer"
+              variant="solid"
+              onClick={() => {
+                setIsOpen(!isOpen);
+                mutate.mutate(Status.DONE);
+              }}
+              _hover={{ filter: "brightness(0.95)" }}
+            >
+              Done
+            </Badge>
+          </VStack>
+        )}
+      </Box>
+    );
   }
 
   function Assignee() {

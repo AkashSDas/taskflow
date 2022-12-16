@@ -111,3 +111,25 @@ export async function deleteTodo(todoId, taskId, accessToken) {
     error: response.error ?? response.data?.error,
   };
 }
+
+export async function updateTaskStatus(taskId, status, accessToken) {
+  if (Object.values(status).includes(status)) {
+    throw new Error("Invalid status");
+  }
+
+  var response = await fetchFromTask(
+    `${taskId}/status`,
+    "put",
+    { status },
+    accessToken
+  );
+
+  if (response.status == 200) {
+    return { success: response.success, task: response.data.task };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
+}

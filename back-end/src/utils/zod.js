@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Priority } from "../models/task.schema.js";
+import { Priority, Status } from "../models/task.schema.js";
 
 // =============================
 // Auth
@@ -44,5 +44,11 @@ export var addTodoSchema = z.object({
 export var updateTodoStatusSchema = z.object({
   body: z.object({
     done: z.boolean({ required_error: "Required" }),
+  }),
+});
+
+export var updateTaskStatusSchema = z.object({
+  body: z.object({
+    status: z.enum(Object.values(Status), { required_error: "Required" }),
   }),
 });
