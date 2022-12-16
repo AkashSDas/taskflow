@@ -93,3 +93,21 @@ export async function updateTodoStatus(todoId, taskId, done, accessToken) {
     error: response.error ?? response.data?.error,
   };
 }
+
+export async function deleteTodo(todoId, taskId, accessToken) {
+  var response = await fetchFromTask(
+    `${taskId}/todo/${todoId}`,
+    "delete",
+    null,
+    accessToken
+  );
+
+  if (response.status == 200) {
+    return { success: response.success, task: response.data.task };
+  }
+
+  return {
+    success: response.success,
+    error: response.error ?? response.data?.error,
+  };
+}

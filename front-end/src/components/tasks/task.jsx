@@ -17,8 +17,9 @@ import { useTask, useUser } from "../../lib/hooks";
 import CreateTodoModal from "../modal/create-todo";
 import { DeleteIcon } from "./tasks-list";
 import { useMutation } from "react-query";
-import { updateTodoStatus } from "../../services/task";
+import { deleteTodo, updateTodoStatus } from "../../services/task";
 import { queryClient } from "../../lib/react-query";
+import { customToast } from "../shared/toast";
 
 export default function Task() {
   var { loading, task } = useTask();
@@ -102,7 +103,7 @@ function Todos({ taskId, todos }) {
 
 function Todo({ taskId, todo }) {
   var { accessToken } = useUser();
-  var mutate = useMutation({
+  var doneMutation = useMutation({
     mutationFn: () => {
       return updateTodoStatus(todo._id, taskId, !todo.done, accessToken);
     },
@@ -138,6 +139,39 @@ function Todo({ taskId, todo }) {
     },
   });
 
+  var removeMutation = useMutation({
+    mutationFn: () => deleteTodo(todo._id, taskId, accessToken),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["task", taskId] });
+      var previousData = queryClient.getQueryData(["task", taskId]);
+      var updatedTask = {
+        ...previousData,
+        task: {
+          ...previousData.task,
+          todos: previousData.task.todos.filter((t) => t._id != todo._id),
+        },
+      };
+
+      queryClient.setQueryData(["task", taskId], () => {
+        return { ...updatedTask };
+      });
+
+      customToast(
+        "https://media.giphy.com/media/5nsiFjdgylfK3csZ5T/giphy-downsized.gif",
+        "Todo removed",
+        "success"
+      );
+
+      return { previousData, taskId };
+    },
+    onError: (_err, _variables, context) => {
+      queryClient.setQueryData(["task", context.taskId], context?.previousData);
+    },
+    onSettled: (_newData, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["tasks", variables?.taskId] });
+    },
+  });
+
   return (
     <HStack
       role="group"
@@ -159,8 +193,8 @@ function Todo({ taskId, todo }) {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        onClick={() => mutate.mutate()}
-        disabled={mutate.isLoading}
+        onClick={() => doneMutation.mutate()}
+        disabled={doneMutation.isLoading}
       >
         <DoneIcon done={todo.done} />
       </IconButton>
@@ -169,9 +203,15 @@ function Todo({ taskId, todo }) {
         {todo.title}
       </Text>
 
-      <Box visibility="hidden" _groupHover={{ visibility: "visible" }}>
+      <IconButton
+        variant="unstyled"
+        visibility="hidden"
+        onClick={() => removeMutation.mutate()}
+        disabled={removeMutation.isLoading}
+        _groupHover={{ visibility: "visible" }}
+      >
         <DeleteIcon />
-      </Box>
+      </IconButton>
     </HStack>
   );
 }
