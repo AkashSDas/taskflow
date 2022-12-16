@@ -23,3 +23,10 @@ export var createTodoSchema = object({
     .min(3, "Too Short!")
     .max(64, "Too Long!"),
 }).required("Required");
+
+export var searchSchema = object({
+  query: string()
+    .required("Required")
+    .min(3, "Too Short!")
+    .max(64, "Too Long!"),
+}).required("Required");
